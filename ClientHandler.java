@@ -13,7 +13,7 @@ public class ClientHandler {
     public synchronized void broadcast(int sendingClient, String message){
         clients.forEach(client -> {
             if(client.getClientNumber() != sendingClient){
-                client.sendTo(message);
+                client.sendTo(sendingClient + ": " + message);
             }
         });
     }

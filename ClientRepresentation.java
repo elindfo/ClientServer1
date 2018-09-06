@@ -35,11 +35,19 @@ public class ClientRepresentation extends Thread{
             while(running){
                 String message = bufferedReader.readLine();
                 System.out.println("Message recieved: " + message);
-                switch(message){
-                    case "/quit": {
-                        clientHandler.quit(this.clientNo);
-                        running = false;
+                if(message.isEmpty()){
+                    printWriter.println("Server: Empty message");
+                }
+                else if(message.charAt(0) == '/'){ //Command
+                    switch(message.substring(1)){
+                        case "quit": {
+                            clientHandler.quit(this.clientNo);
+                            running = false;
+                        }
                     }
+                }
+                else{
+                    clientHandler.broadcast(this.clientNo, message);
                 }
             }
         }catch(IOException ioe){
