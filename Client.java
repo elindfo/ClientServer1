@@ -42,8 +42,9 @@ public class Client {
             try {
                 send.join();
                 clientReceive.stopClientReceive();
+                System.out.println("Exited");
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
         }catch(IOException ioe){
             System.err.println(ioe.getMessage());
@@ -81,7 +82,11 @@ public class Client {
         @Override
         public void run() {
             while(running){
-
+                try {
+                    System.out.println(in.readLine());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
