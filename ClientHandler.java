@@ -39,6 +39,10 @@ public class ClientHandler {
         clients.get(getIndexOfClient(sendingClient)).sendTo(clientNames.toString());
     }
 
+    public synchronized void nickname(int sendingClient, String nickname){
+        clients.get(getIndexOfClient(sendingClient)).setNickname(nickname);
+    }
+
     private int getIndexOfClient(int clientNumber){
         int index = -1;
         for(int i = 0; i < clients.size(); i++){
