@@ -13,11 +13,13 @@ public class ClientRepresentation extends Thread{
     private String nickname;
     private ClientHandler clientHandler;
     private int clientNo;
+    private boolean running;
 
 
     public ClientRepresentation(Socket clientSocket, ClientHandler clientHandler, int clientNo){
         this.clientHandler = clientHandler;
         this.clientNo = clientNo;
+        running = false;
         try {
             this.bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             this.printWriter = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -28,19 +30,29 @@ public class ClientRepresentation extends Thread{
 
     @Override
     public void run() {
+        running = true;
         try{
-            while(true){
+            while(running){
                 String message = bufferedReader.readLine();
                 System.out.println("Message recieved: " + message);
-                clientHandler.broadcast("message: " + message + ", client: " + clientNo);
+                switch(message){
+                    case "/quit": {
+                        clientHandler.quit(this.clientNo);
+                        running = false;
+                    }
+                }
             }
         }catch(IOException ioe){
 
         }
     }
 
-    public PrintWriter getPrintWriter(){
-        return this.printWriter;
+    public int getClientNumber(){
+        return this.clientNo;
+    }
+
+    public void sendTo(String message){
+        printWriter.println(message);
     }
 
 }

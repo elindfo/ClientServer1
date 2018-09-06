@@ -37,6 +37,7 @@ public class Server {
                 ClientRepresentation client = new ClientRepresentation(clientSocket, clientHandler, clients.size() + 1);
                 clients.add(client);
                 client.start();
+                client.sendTo("Server: Welcome To The Chat! You are client number " + (client.getClientNumber()));
                 System.out.println("New Client connected");
             }
         }catch(IOException ioe){

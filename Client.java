@@ -23,8 +23,6 @@ public class Client {
     }
 
     public void connect(){
-        System.out.println("Client connected to " + serverIp + " on port " + serverPort);
-
         Socket socket;
         BufferedReader in;
         PrintWriter out;
@@ -63,9 +61,10 @@ public class Client {
         public void run() {
             Scanner scanner = new Scanner(System.in);
             String message;
-            while(!(message = scanner.nextLine()).equals("exit")){
+            do{
+                message = scanner.nextLine();
                 out.println(message);
-            }
+            }while(!message.equals("/quit"));
         }
     }
 
@@ -83,7 +82,13 @@ public class Client {
         public void run() {
             while(running){
                 try {
-                    System.out.println(in.readLine());
+                    String message = in.readLine();
+                    System.out.println(message);
+                    switch(message){
+                        case "TERM": {
+                            running = false;
+                        }
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

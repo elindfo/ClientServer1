@@ -10,10 +10,28 @@ public class ClientHandler {
         this.clients = clients;
     }
 
-
-    public synchronized void broadcast(String message){
-        clients.forEach(client -> client.getPrintWriter().println(message));
+    public synchronized void broadcast(int sendingClient, String message){
+        clients.forEach(client -> {
+            if(client.getClientNumber() != sendingClient){
+                client.sendTo(message);
+            }
+        });
     }
 
+    public synchronized void quit(int clientNumber){
+        clients.get(getIndexOfClient(clientNumber)).sendTo("TERM");
+        clients.remove(getIndexOfClient(clientNumber));
+        broadcast(clientNumber, "Client no: " + clientNumber + " has disconnected.");
+    }
 
+    private int getIndexOfClient(int clientNumber){
+        int index = -1;
+        for(int i = 0; i < clients.size(); i++){
+            if(clients.get(i).getClientNumber() == clientNumber){
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
 }
