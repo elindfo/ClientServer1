@@ -62,6 +62,7 @@ public class Client {
             Scanner scanner = new Scanner(System.in);
             String message;
             do{
+                System.out.print("> ");
                 message = scanner.nextLine();
                 out.println(message);
             }while(!message.equals("/quit"));

@@ -18,10 +18,25 @@ public class ClientHandler {
         });
     }
 
-    public synchronized void quit(int clientNumber){
-        clients.get(getIndexOfClient(clientNumber)).sendTo("TERM");
-        clients.remove(getIndexOfClient(clientNumber));
-        broadcast(clientNumber, "Client no: " + clientNumber + " has disconnected.");
+    public synchronized void quit(int sendingClient){
+        clients.get(getIndexOfClient(sendingClient)).sendTo("TERM");
+        clients.remove(getIndexOfClient(sendingClient));
+        broadcast(sendingClient, "Client no: " + sendingClient + " has disconnected.");
+    }
+
+    public synchronized void who(int sendingClient){
+        StringBuffer clientNames = new StringBuffer("Others in chat");
+        clientNames.append("\n");
+        clients.forEach(client -> {
+            if(client.getClientNumber() != sendingClient){
+                clientNames.append("Client No: ");
+                clientNames.append(client.getClientNumber());
+                clientNames.append(", Nickname: ");
+                clientNames.append(client.getNickname());
+                clientNames.append("\n");
+            }
+        });
+        clients.get(getIndexOfClient(sendingClient)).sendTo(clientNames.toString());
     }
 
     private int getIndexOfClient(int clientNumber){

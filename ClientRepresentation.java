@@ -44,6 +44,9 @@ public class ClientRepresentation extends Thread{
                             clientHandler.quit(this.clientNo);
                             running = false;
                         }
+                        case "who": {
+                            clientHandler.who(this.clientNo);
+                        }
                     }
                 }
                 else{
@@ -57,6 +60,10 @@ public class ClientRepresentation extends Thread{
 
     public int getClientNumber(){
         return this.clientNo;
+    }
+
+    public String getNickname(){
+        return this.nickname;
     }
 
     public void sendTo(String message){
