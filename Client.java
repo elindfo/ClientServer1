@@ -23,9 +23,9 @@ public class Client {
     }
 
     public void connect(){
-        Socket socket;
-        BufferedReader in;
-        PrintWriter out;
+        Socket socket = null;
+        BufferedReader in = null;
+        PrintWriter out = null;
         try{
             socket = new Socket(serverIp, serverPort);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -46,7 +46,28 @@ public class Client {
             }
         }catch(IOException ioe){
             System.err.println(ioe.getMessage());
+        }finally{
+            if(socket != null){
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.getMessage();
+                }
+            }
+
+            if(in != null){
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.getMessage();
+                }
+            }
+
+            if(out != null){
+                out.close();
+            }
         }
+
     }
 
     private class ClientSend implements Runnable{

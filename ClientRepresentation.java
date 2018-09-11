@@ -58,7 +58,7 @@ public class ClientRepresentation extends Thread{
                 else if(message.charAt(0) == '/'){ //Command
                     String[] splitMessage = message.substring(1).split(" ");
                     if(message.length() < 2 || splitMessage.length < 1){
-                        printWriter.println("Option not found");
+                        printWriter.println("Command not found");
                     }
                     else{
                         Arrays.stream(splitMessage).forEach(keyword -> System.out.println("[" + keyword + "]"));
@@ -86,7 +86,7 @@ public class ClientRepresentation extends Thread{
                                 break;
                             }
                             default: {
-                                printWriter.println("Option not found");
+                                printWriter.println("Unknown command");
                                 printWriter.flush();
                             }
                         }
