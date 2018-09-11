@@ -45,10 +45,13 @@ public class ClientRepresentation extends Thread{
             printWriter = new PrintWriter(clientSocket.getOutputStream(), true);
 
             printWriter.println("Server: Welcome To The Chat! You are client number " + (this.clientNo));
+            System.out.println("New client connected");
+            System.out.println(printInfo(""));
 
             while(running){
                 String message = bufferedReader.readLine();
-                System.out.println("Message recieved: " + message);
+                System.out.println(printInfo(message));
+
                 if(message == null){
                     throw new IOException("Connection lost");
                 }
@@ -61,7 +64,7 @@ public class ClientRepresentation extends Thread{
                         printWriter.println("Command not found");
                     }
                     else{
-                        Arrays.stream(splitMessage).forEach(keyword -> System.out.println("[" + keyword + "]"));
+                        //Arrays.stream(splitMessage).forEach(keyword -> System.out.println("[" + keyword + "]"));
                         switch(splitMessage[0]){
                             case "quit": {
                                 clientHandler.quit(this.clientNo);
@@ -119,6 +122,16 @@ public class ClientRepresentation extends Thread{
                 }
             }
         }
+    }
+
+    public String printInfo(String message){
+        return String.format("%-10s:%s\n%-10s:%d\n%-10s:%d\n%-10s:%s\n%-10s:%s\n",
+                "IP", clientSocket.getInetAddress().getHostAddress(),
+                "Port", clientSocket.getPort(),
+                "CID", clientNo,
+                "Nickname", nickname,
+                "Message", message);
+
     }
 
     public int getClientNumber(){

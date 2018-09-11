@@ -45,7 +45,7 @@ public class Client {
                 System.err.println(e.getMessage());
             }
         }catch(IOException ioe){
-            System.err.println(ioe.getMessage());
+            System.err.println("No connection to server...");
         }finally{
             if(socket != null){
                 try {

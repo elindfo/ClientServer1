@@ -34,11 +34,9 @@ public class Server {
             serverSocket = new ServerSocket(serverPort);
 
             while(running){
-                System.out.println("Waiting for connection...");
                 Socket clientSocket = serverSocket.accept();
                 ClientRepresentation client = new ClientRepresentation(clientSocket, clientHandler, clientNo++);
                 clientHandler.add(client);
-                System.out.println("New Client connected");
             }
         }catch(IOException ioe){
             System.err.println("Socket Error: " + ioe.getMessage());
