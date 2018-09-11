@@ -13,6 +13,8 @@ public class Server {
     private int serverPort;
     private boolean running;
 
+    private static int clientNo = 0;
+
     public Server(int serverPort){
         this.serverPort = serverPort;
         clients = new ArrayList<>();
@@ -34,7 +36,7 @@ public class Server {
             while(running){
                 System.out.println("Waiting for connection...");
                 Socket clientSocket = serverSocket.accept();
-                ClientRepresentation client = new ClientRepresentation(clientSocket, clientHandler, clients.size() + 1);
+                ClientRepresentation client = new ClientRepresentation(clientSocket, clientHandler, clientNo++);
                 clients.add(client);
                 client.start();
                 System.out.println("New Client connected");

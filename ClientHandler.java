@@ -41,8 +41,21 @@ public class ClientHandler {
         clients.get(getIndexOfClient(sendingClient)).sendTo(clientNames.toString());
     }
 
-    public synchronized void nickname(int sendingClient, String nickname){
-        clients.get(getIndexOfClient(sendingClient)).setNickname(nickname);
+    public synchronized void nickname(int clientNo, String nickname){
+        boolean duplicateFound = false;
+        for(ClientRepresentation c : clients){
+            if(c.getNickname().toUpperCase().equals(nickname.toUpperCase())){
+                duplicateFound = true;
+                break;
+            }
+        }
+        if(!duplicateFound){
+            clients.get(getIndexOfClient(clientNo)).setNickname(nickname);
+            clients.get(getIndexOfClient(clientNo)).sendTo("Nickname set: " + nickname);
+        }
+        else{
+            clients.get(getIndexOfClient(clientNo)).sendTo("Nickname unavailable");
+        }
     }
 
     public synchronized void disconnect(int clientNo) {
