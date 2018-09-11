@@ -135,7 +135,5 @@ public class ClientRepresentation extends Thread{
 
     public void sendTo(String message){
         printWriter.println(message);
-        printWriter.flush();
     }
-
 }

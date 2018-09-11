@@ -37,8 +37,7 @@ public class Server {
                 System.out.println("Waiting for connection...");
                 Socket clientSocket = serverSocket.accept();
                 ClientRepresentation client = new ClientRepresentation(clientSocket, clientHandler, clientNo++);
-                clients.add(client);
-                client.start();
+                clientHandler.add(client);
                 System.out.println("New Client connected");
             }
         }catch(IOException ioe){

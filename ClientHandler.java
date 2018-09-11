@@ -12,10 +12,15 @@ public class ClientHandler {
         this.clients = clients;
     }
 
+    public synchronized void add(ClientRepresentation client){
+        clients.add(client);
+        client.start();
+    }
+
     public synchronized void broadcast(int sendingClient, String message){
         clients.forEach(client -> {
             if(client.getClientNumber() != sendingClient){
-                client.sendTo(sendingClient + ": " + message);
+                client.sendTo("Client " + sendingClient + ": " + message);
             }
         });
     }
@@ -23,7 +28,7 @@ public class ClientHandler {
     public synchronized void quit(int sendingClient){
         clients.get(getIndexOfClient(sendingClient)).sendTo("TERM");
         clients.remove(getIndexOfClient(sendingClient));
-        broadcast(sendingClient, "Client no: " + sendingClient + " has disconnected.");
+        broadcast(sendingClient, "Client " + sendingClient + " has disconnected.");
     }
 
     public synchronized void who(int sendingClient){
@@ -60,7 +65,7 @@ public class ClientHandler {
 
     public synchronized void disconnect(int clientNo) {
         clients.remove(getIndexOfClient(clientNo));
-        broadcast(clientNo, "Client: " + clientNo + " lost connection");
+        broadcast(clientNo, "Client " + clientNo + " lost connection");
     }
 
     private int getIndexOfClient(int clientNumber){
