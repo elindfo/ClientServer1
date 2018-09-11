@@ -39,7 +39,7 @@ public class Client {
 
             try {
                 send.join();
-                clientReceive.stopClientReceive();
+                receive.join();
                 System.out.println("Exited");
             } catch (InterruptedException e) {
                 System.err.println(e.getMessage());
@@ -94,10 +94,6 @@ public class Client {
                     e.printStackTrace();
                 }
             }
-        }
-
-        public void stopClientReceive(){
-            running = false;
         }
     }
 }

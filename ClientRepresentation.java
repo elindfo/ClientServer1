@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class ClientRepresentation extends Thread{
 
     //TODO Fix "option not found" bug when entering certain commands (probably substring-related)
 
+    private Socket clientSocket;
     private BufferedReader bufferedReader;
     private PrintWriter printWriter;
     private String nickname;
@@ -19,39 +21,51 @@ public class ClientRepresentation extends Thread{
 
 
     public ClientRepresentation(Socket clientSocket, ClientHandler clientHandler, int clientNo){
+        this.clientSocket = clientSocket;
+        bufferedReader = null;
+        printWriter = null;
         this.clientHandler = clientHandler;
         this.clientNo = clientNo;
         running = false;
         nickname = "";
-        try {
-            this.bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            this.printWriter = new PrintWriter(clientSocket.getOutputStream(), true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     public void run() {
         running = true;
         try{
+            bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            printWriter = new PrintWriter(clientSocket.getOutputStream(), true);
             while(running){
                 String message = bufferedReader.readLine();
                 System.out.println("Message recieved: " + message);
-                if(message.isEmpty()){
+                if(message == null){
+                    throw new IOException("Lost connection...");
+                }
+                else if(message.isEmpty()){
                     printWriter.println("Server: Empty message");
                 }
                 else if(message.charAt(0) == '/'){ //Command
-                    switch(message.substring(1).split(" ")[0]){
+                    String[] splitMessage = message.substring(1).split(" ");
+                    Arrays.stream(splitMessage).forEach(keyword -> System.out.println("[" + keyword + "]"));
+                    switch(splitMessage[0]){
                         case "quit": {
                             clientHandler.quit(this.clientNo);
                             running = false;
+                            break;
                         }
-                        case "who": {
+                        case "who":{
                             clientHandler.who(this.clientNo);
+                            break;
                         }
                         case "nick": {
-                            clientHandler.nickname(this.clientNo, message.substring(1).split(" ")[1]);
+                            if(splitMessage.length == 2) {
+                                clientHandler.nickname(this.clientNo, splitMessage[1]);
+                            }
+                            else{
+                                printWriter.println("Invalid nickname.");
+                            }
+                            break;
                         }
                         default: {
                             printWriter.println("Server: Option not found");
@@ -64,7 +78,18 @@ public class ClientRepresentation extends Thread{
                 }
             }
         }catch(IOException ioe){
-
+            clientHandler.disconnect(this.clientNo);
+        }finally{
+            if(bufferedReader != null){
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    System.err.println("Unable to close bufferedReader");
+                }
+            }
+            if(printWriter != null){
+                printWriter.close();
+            }
         }
     }
 

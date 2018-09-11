@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 public class ClientHandler {
 
+    //TODO Fixa så att klienten tas bort från listan om anslutningen avbryts
+
     private ArrayList<ClientRepresentation> clients;
 
     public ClientHandler(ArrayList<ClientRepresentation> clients){
@@ -41,6 +43,11 @@ public class ClientHandler {
 
     public synchronized void nickname(int sendingClient, String nickname){
         clients.get(getIndexOfClient(sendingClient)).setNickname(nickname);
+    }
+
+    public synchronized void disconnect(int clientNo) {
+        clients.remove(getIndexOfClient(clientNo));
+        broadcast(clientNo, "Client: " + clientNo + " lost connection");
     }
 
     private int getIndexOfClient(int clientNumber){
