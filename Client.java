@@ -64,7 +64,7 @@ public class Client {
             do{
                 message = scanner.nextLine();
                 out.println(message);
-            }while(message != "/quit");
+            }while(!message.equals("/quit"));
         }
     }
 

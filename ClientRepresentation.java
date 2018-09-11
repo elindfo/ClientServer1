@@ -19,6 +19,13 @@ public class ClientRepresentation extends Thread{
     private int clientNo;
     private boolean running;
 
+    private static final String AVAILABLE_COMMANDS =
+            "Available commands:\n" +
+                    "\t/who - display other channel users\n" +
+                    "\t/nick <nickname> - set nickname\n" +
+                    "\t/quit - exit chat\n" +
+                    "\t/help - show this message";
+
 
     public ClientRepresentation(Socket clientSocket, ClientHandler clientHandler, int clientNo){
         this.clientSocket = clientSocket;
@@ -72,6 +79,10 @@ public class ClientRepresentation extends Thread{
                                 else{
                                     printWriter.println("Invalid username");
                                 }
+                                break;
+                            }
+                            case "help": {
+                                printWriter.println(AVAILABLE_COMMANDS);
                                 break;
                             }
                             default: {
