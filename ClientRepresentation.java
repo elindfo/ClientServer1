@@ -36,40 +36,48 @@ public class ClientRepresentation extends Thread{
         try{
             bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             printWriter = new PrintWriter(clientSocket.getOutputStream(), true);
+
+            printWriter.println("Server: Welcome To The Chat! You are client number " + (this.clientNo));
+
             while(running){
                 String message = bufferedReader.readLine();
                 System.out.println("Message recieved: " + message);
                 if(message == null){
-                    throw new IOException("Lost connection...");
+                    throw new IOException("Connection lost");
                 }
                 else if(message.isEmpty()){
-                    printWriter.println("Server: Empty message");
+                    printWriter.println("Empty message");
                 }
                 else if(message.charAt(0) == '/'){ //Command
                     String[] splitMessage = message.substring(1).split(" ");
-                    Arrays.stream(splitMessage).forEach(keyword -> System.out.println("[" + keyword + "]"));
-                    switch(splitMessage[0]){
-                        case "quit": {
-                            clientHandler.quit(this.clientNo);
-                            running = false;
-                            break;
-                        }
-                        case "who":{
-                            clientHandler.who(this.clientNo);
-                            break;
-                        }
-                        case "nick": {
-                            if(splitMessage.length == 2) {
-                                clientHandler.nickname(this.clientNo, splitMessage[1]);
+                    if(message.length() < 2 || splitMessage.length < 1){
+                        printWriter.println("Option not found");
+                    }
+                    else{
+                        Arrays.stream(splitMessage).forEach(keyword -> System.out.println("[" + keyword + "]"));
+                        switch(splitMessage[0]){
+                            case "quit": {
+                                clientHandler.quit(this.clientNo);
+                                running = false;
+                                break;
                             }
-                            else{
-                                printWriter.println("Invalid nickname.");
+                            case "who":{
+                                clientHandler.who(this.clientNo);
+                                break;
                             }
-                            break;
-                        }
-                        default: {
-                            printWriter.println("Server: Option not found");
-                            printWriter.flush();
+                            case "nick": {
+                                if(splitMessage.length == 2) {
+                                    clientHandler.nickname(this.clientNo, splitMessage[1]);
+                                }
+                                else{
+                                    printWriter.println("Invalid username");
+                                }
+                                break;
+                            }
+                            default: {
+                                printWriter.println("Option not found");
+                                printWriter.flush();
+                            }
                         }
                     }
                 }
@@ -84,11 +92,20 @@ public class ClientRepresentation extends Thread{
                 try {
                     bufferedReader.close();
                 } catch (IOException e) {
-                    System.err.println("Unable to close bufferedReader");
+                    e.getMessage();
                 }
             }
+
             if(printWriter != null){
                 printWriter.close();
+            }
+
+            if(clientSocket != null){
+                try {
+                    clientSocket.close();
+                } catch (IOException e) {
+                    System.err.println(e.getMessage());
+                }
             }
         }
     }
