@@ -55,6 +55,10 @@ public class Server {
     }
 
     public static void main(String[] args) {
+        if(args.length != 1){
+            System.err.println("Invalid program arguments");
+            System.exit(1);
+        }
         Server server = new Server(Integer.parseInt(args[0]));
         server.start();
     }
