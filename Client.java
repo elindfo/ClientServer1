@@ -4,10 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Client {
 
@@ -32,13 +32,14 @@ public class Client {
         Socket socket = null;
         BufferedReader in = null;
         PrintWriter out = null;
+        AtomicBoolean serverIsResponding = new AtomicBoolean(true);
         try{
             socket = new Socket();
             socket.connect(new InetSocketAddress(serverIp, serverPort), 2000);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
-            ClientSend clientSend = new ClientSend(out);
-            ClientReceive clientReceive = new ClientReceive(in);
+            ClientSend clientSend = new ClientSend(out, serverIsResponding);
+            ClientReceive clientReceive = new ClientReceive(in, serverIsResponding);
             Thread send = new Thread(clientSend);
             Thread receive = new Thread(clientReceive);
             send.start();
@@ -79,9 +80,11 @@ public class Client {
     private class ClientSend implements Runnable{
 
         private PrintWriter out;
+        private AtomicBoolean serverIsResponding;
 
-        public ClientSend(PrintWriter out){
+        public ClientSend(PrintWriter out, AtomicBoolean serverIsResponding){
             this.out = out;
+            this.serverIsResponding = serverIsResponding;
         }
 
         @Override
@@ -91,7 +94,8 @@ public class Client {
             do{
                 message = scanner.nextLine();
                 out.println(message);
-            }while(!message.equals("/quit"));
+                System.out.println("responding:"+serverIsResponding);
+            }while(!message.equals("/quit") && serverIsResponding.get());
         }
     }
 
@@ -99,10 +103,12 @@ public class Client {
 
         private BufferedReader in;
         private boolean running;
+        private AtomicBoolean serverIsResponding;
 
-        public ClientReceive(BufferedReader in){
+        public ClientReceive(BufferedReader in, AtomicBoolean serverIsResponding){
             this.in = in;
             running = true;
+            this.serverIsResponding = serverIsResponding;
         }
 
         @Override
@@ -110,14 +116,24 @@ public class Client {
             while(running){
                 try {
                     String message = in.readLine();
-                    System.out.println(message);
-                    switch(message){
-                        case "TERM": {
-                            running = false;
+                    if(message != null){
+                        System.out.println(message);
+                        switch(message){
+                            case "TERM": {
+                                running = false;
+                            }
                         }
                     }
+                    else{
+                        System.err.println("ClientRecieve: server not responding");
+                        running = false;
+                        this.serverIsResponding.set(false);
+                    }
+
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.err.println("ClientRecieve: server not responding");
+                    running = false;
+                    serverIsResponding.set(false);
                 }
             }
         }

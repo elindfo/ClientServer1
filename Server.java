@@ -29,7 +29,6 @@ public class Server {
         ServerSocket serverSocket = null;
         PrintWriter out = null;
 
-
         try{
             serverSocket = new ServerSocket(serverPort);
 
