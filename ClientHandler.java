@@ -18,9 +18,10 @@ public class ClientHandler {
     }
 
     public synchronized void broadcast(int sendingClient, String message){
+        int cIndex = getIndexOfClient(sendingClient);
         clients.forEach(client -> {
             if(client.getClientNumber() != sendingClient){
-                client.sendTo("Client " + sendingClient + ": " + message);
+                client.sendTo((clients.get(cIndex).getNickname().equals("") ? "Client " + sendingClient : clients.get(cIndex).getNickname()) + ": " + message);
             }
         });
     }
