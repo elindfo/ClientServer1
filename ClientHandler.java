@@ -18,18 +18,32 @@ public class ClientHandler {
     }
 
     public synchronized void broadcast(int sendingClient, String message){
-        int cIndex = getIndexOfClient(sendingClient);
         clients.forEach(client -> {
             if(client.getClientNumber() != sendingClient){
-                client.sendTo((clients.get(cIndex).getNickname().equals("") ? "Client " + sendingClient : clients.get(cIndex).getNickname()) + ": " + message);
+                client.sendTo("Client " + sendingClient + ": " + message);
+            }
+        });
+    }
+
+    public synchronized void broadcast(String clientName, String message){
+        clients.forEach(client -> {
+            if(!client.getNickname().equals(clientName)){
+                client.sendTo("Client " + clientName + ": " + message);
             }
         });
     }
 
     public synchronized void quit(int sendingClient){
-        clients.get(getIndexOfClient(sendingClient)).sendTo("TERM");
+        int i = getIndexOfClient(sendingClient);
+        String nick = clients.get(i).getNickname();
+        clients.get(i).sendTo("TERM");
         clients.remove(getIndexOfClient(sendingClient));
-        broadcast(sendingClient, "Client " + sendingClient + " has disconnected.");
+        if(nick.equals("")){
+            broadcast(sendingClient, "disconnected");
+        }
+        else{
+            broadcast(nick,  "disconnected");
+        }
     }
 
     public synchronized void who(int sendingClient){
@@ -65,8 +79,15 @@ public class ClientHandler {
     }
 
     public synchronized void disconnect(int clientNo) {
+        int i = getIndexOfClient(clientNo);
+        String nick = clients.get(i).getNickname();
         clients.remove(getIndexOfClient(clientNo));
-        broadcast(clientNo, "Client " + clientNo + " lost connection");
+        if(nick.equals("")){
+            broadcast(clientNo, "lost connection");
+        }
+        else{
+            broadcast(nick,  "lostConnection");
+        }
     }
 
     private int getIndexOfClient(int clientNumber){

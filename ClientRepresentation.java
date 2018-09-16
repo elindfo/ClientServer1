@@ -96,7 +96,11 @@ public class ClientRepresentation extends Thread{
                     }
                 }
                 else{
-                    clientHandler.broadcast(this.clientNo, message);
+                    if(nickname.equals(""))
+                        clientHandler.broadcast(this.clientNo, message);
+                    else{
+                        clientHandler.broadcast(this.nickname, message);
+                    }
                 }
             }
         }catch(IOException ioe){
