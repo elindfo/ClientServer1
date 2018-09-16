@@ -9,8 +9,6 @@ import java.util.Arrays;
 
 public class ClientRepresentation extends Thread{
 
-    //TODO Fix "option not found" bug when entering certain commands (probably substring-related)
-
     private Socket clientSocket;
     private BufferedReader bufferedReader;
     private PrintWriter printWriter;

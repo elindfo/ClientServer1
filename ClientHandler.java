@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 public class ClientHandler {
 
-    //TODO Fixa så att klienten tas bort från listan om anslutningen avbryts
-
     private ArrayList<ClientRepresentation> clients;
 
     public ClientHandler(ArrayList<ClientRepresentation> clients){
